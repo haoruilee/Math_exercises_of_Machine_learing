@@ -1,0 +1,323 @@
+\documentclass[a4 paper]{article}
+\usepackage[inner=2.0cm,outer=2.0cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{setspace}
+\usepackage{amsgen,amsmath,amstext,amsbsy,amsopn,tikz,amssymb,tkz-linknodes}
+\usepackage{booktabs}
+\usepackage{framed}
+
+% Symbols
+\renewcommand{\epsilon}{\varepsilon}
+\newcommand{\T}{\top}
+
+% Linear algebra
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\newcommand{\norm}[2][]{\lVert #2 \rVert _{#1}}
+
+% Operator
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\le}{\leqslant}
+\newcommand{\vecdot}{\cdot}
+
+\newcommand{\homework}[6]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf Machine Learning \hfill {\small (#2)}} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: {\rm #3} \hfill Name: {\rm #5}, ID: {\rm #6}} }
+       %\hbox to 6.28in { {\it TA: #4  \hfill #6}}
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#5 -- #1}{#5 -- #1}
+   \vspace*{4mm}
+}
+
+\newcounter{problem}[section]
+\newcommand{\problem}[1]{~\newline\fbox{\textbf{Problem \refstepcounter{problem}\theproblem: #1}}\newline\newline}
+\newcounter{subproblem}[problem]
+\newcommand{\subproblem}{~\newline\textbf{(\refstepcounter{subproblem}\thesubproblem)}~}
+\newenvironment{solution}{\newpage\setcounter{problem}{0}\begin{framed}\section*{Answer:}}{\vspace{15pt}\end{framed}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Please add your name and student ID to the {} below
+
+\newcommand{\studentname}{Li Haorui}
+\newcommand{\studentID}{61518407}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\homework{Assignment \#2   (Linear Model)}{Due: 8th April}{Beilun Wang}{}{\studentname}{\studentID}
+
+\section*{Problem Description:}
+
+\problem{Linear Regression}
+ Give data set $\vec X=(\vec x^{(1)},\vec x^{(2)},\cdots,\vec x^{(n)})^\T$ and $\vec y=(y^{(1)},y^{(2)},\cdots, y^{(n)})^\T$ where $(\vec x^{(i)\T},y^{(i)}) = (x_1^{(i)},x_2^{(i)},\cdots,x_p^{(i)},y^{(i)})$ is the $i$-th observation. We focus on the model $y=\vec\theta^\T\vec x+\epsilon$.
+
+\subproblem Assuming $\epsilon\sim\mathcal N(0,\sigma^2)$, write down the log-likelihood function of $\vec y$. You can ignore any unnecessary constants.
+
+\subproblem Based on your answer to (1), show that finding Maximum Likelihood Estimate of $\vec\theta$ is equivalent to solving $\mathrm{argmin}_{\vec\theta}\; \norm{\vec y-\vec X\vec\theta}^2$.
+
+\subproblem Prove that $\vec X^\T\vec X+\lambda \vec I$ with $\lambda>0$ is Positive Definite(Hint: definition).
+
+\subproblem Show that $\vec\theta^* = (\vec X^\T\vec X+\lambda\vec I)^{-1}\vec X^\T\vec y$ is the solution to $\mathrm{argmin}_{\vec\theta}\; \norm{\vec y-\vec X\vec\theta}^2+\lambda\norm{\vec\theta}^2$.
+
+\subproblem Assuming $\epsilon\sim\mathcal N(0,\sigma^2)$ and $\theta_i\sim\mathcal N(0,\tau^2)$ for $i=1,2,\cdots,p$ in $\vec\theta$($\vec\theta$ does not vary in each sample), write down the estimate of $\vec\theta$ by maximizing the conditional distribution $f(\vec\theta\,|\,\vec y)$(Hint: Bayes' formula). You can ignore any unnecessary constants. Also find out the relationship between your estimate and the solution in (4).
+
+\vspace{20pt}
+
+\problem{Gradient Descent}
+Continuously differentiable function $f:\,\mathbb R\mapsto\mathbb R$ is called \textbf{$\beta$-smooth} when its derivative $f'$ is \textbf{$\beta$-Lipschitz}, which for $\beta>0$ implies that
+\[
+    |f'(x)-f'(y)|\le \beta|x-y|.
+\]
+Now suppose $f$ is \textbf{$\beta$-smooth} and \textbf{convex} as a loss function in a gradient descent problem.
+
+\subproblem Prove that\[f(y)-f(x)\le f'(x)(y-x)+\frac\beta2(y-x)^2.\](Hint: Newton-Leibniz formula.)
+
+\subproblem Give $x_{k+1}=x_k-\eta f'(x_k)$ as one step of GD. Prove that\[f(x_{k+1})\le f(x_k)-\eta(1-\frac{\eta\beta}2)(f'(x_k))^2.\]
+
+\subproblem Based on (2), let $\eta=1/\beta$ and assume the unique global minimum point $x^*$ of $f$ exists. Prove that \[\lim_{k\to\infty}f'(x_k)=0,\; \lim_{k\to\infty}x_k=x^*.\](Hint: show that for $K\in\mathbb N_+$, $\sum_{k=1}^K (f'(x_k))^2\le 2\beta(f(x_1)-f(x_{K+1}))$.)
+
+\subproblem Recall one of the properties of convex function: $f(y)\ge f(x)+f'(x)(y-x)$. Prove that\[f(y)-f(x)\ge f'(x)(y-x)+\frac1{2\beta}(f'(y)-f'(x))^2.\]
+(Hint: let $z=y-\frac1\beta(f'(y)-f'(x))$.)
+
+\vspace{20pt}
+
+\problem{Kernel functions}
+Kernel function $k:\,\mathbb R^p\times\mathbb R^p\mapsto\mathbb R$ is called \textbf{Positive Semi-Definite}(\textbf{PSD}) when its Gramian matrix $K$ is PSD, where $K_{ij}=k(\vec u_i,\vec u_j)$ for any group of vectors $\vec u_1,\vec u_2,\cdots,\vec u_n\in\mathbb R^p$. Let $k_1$ and $k_2$ be two PSD kernels.
+
+\subproblem Give a function $f:\,\mathbb R^p\mapsto\mathbb R$. Show that the kernel $k$ defined by $k(\vec u,\vec v)=f(\vec u)f(\vec v)$ is PSD.
+
+\subproblem Show that the kernel $k$ defined by $k(\vec u,\vec v)=k_1(\vec u,\vec v)k_2(\vec u,\vec v)$ is PSD. (Hint: consider about the Hadamard product and eigendecomposition.)
+
+\subproblem Give $P$ as a polynomial with non-negative coefficients(e.g., $P(x)=\sum_i a_ix^i$ with $a_i\ge0$). Show that the kernel $k$ defined by $k(\vec u,\vec v)=P(k_1(\vec u,\vec v))$ is PSD.
+
+\subproblem Show that the kernel $k$ defined by $k(\vec u,\vec v)=\exp(k_1(\vec u,\vec v))$ is PSD. (Hint: use the series expansion.)
+
+\begin{solution}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Please write down your answers in this environment.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem{Linear Regression}
+
+\subproblem 
+\\
+The probability density
+\begin{equation}f_{X}\left(y_{i} ;x,\theta \right)=\left(2 \pi \sigma^{2}\right)^{-1 / 2} \exp \left(-\frac{1}{2} \frac{\left(y_{i}-\theta^{T}^ x_{i}\right)^{2}}{\sigma^{2}}\right)\end{equation}
+
+The joint probability density of the sample $xi $ is
+
+\begin{equation}f_{\Xi}(\xi ; \theta)=\prod_{i=1}^{n} f_{X}\left(x_{i} ; \mu, \sigma^{2}\right)\end{equation}
+
+The likelihood function is
+\begin{equation}\begin{aligned}
+L(\theta ; \xi) &=f_{\Xi}(\xi ; \theta) \\
+&=\prod_{i=1}^{n} f_{X}\left(x_{i} ; \mu, \sigma^{2}\right) \\
+&=\prod_{i=1}^{n}\left(2 \pi \sigma^{2}\right)^{-1 / 2} \exp \left(-\frac{1}{2} \frac{\left(y_{i}-\theta^{T}^ x_{i}\right)^{2}}{\sigma^{2}}\right) \\
+&=\left(2 \pi \sigma^{2}\right)^{-n / 2} \exp \left(-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{n}\left(y_{i}-\theta^{T}^ x_{i}\right)^{2}\right)
+\end{aligned}\end{equation}
+
+The log-likelihood function is
+
+\begin{equation}\begin{aligned}
+l(\theta ; \xi) &=\ln [L(\theta ; \xi)] \\
+&=\ln \left[\left(2 \pi \sigma^{2}\right)^{-n / 2} \exp \left(-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{n}\left(y_{i}-\theta^{T}^ x_{i}\right)^{2}\right)\right] \\
+&=\ln \left[\left(2 \pi \sigma^{2}\right)^{-n / 2}\right]+\ln \left[\exp \left(-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{n}\left(y_{i}-\theta^{T}^ x_{i}\right)^{2}\right)\right] \\
+&=-\frac{n}{2} \ln \left(2 \pi \sigma^{2}\right)-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{n}\left(y_{i}-\theta^{T}^ x_{i}\right)^{2} \\
+&=-\frac{n}{2} \ln (2 \pi)-\frac{n}{2} \ln \left(\sigma^{2}\right)-\frac{1}{2 \sigma^{2}} \sum_{i=1}^{n}\left(y_{i}-\theta^{T}^ x_{i}\right)^{2}
+
+\end{aligned}\end{equation}
+
+\subproblem 
+
+To finding the Maximun Likelihood Estimate of $\theta$, maxmizing L is equivalent to minimizing $\sum_{i=1}^{m}\left(y^{(i)}-\theta^{T} x^{(i)}\right)^{2} .$ That is solving argmin $ min_{\theta} {\theta}\|y-X \theta\|^{2}$
+
+\subproblem 
+With the definition:
+\begin{equation}\boldsymbol{x}^{T}\left(\boldsymbol{X}^{T} \boldsymbol{X}+\lambda \boldsymbol{I}\right) \boldsymbol{x}=\boldsymbol{x}^{T} \boldsymbol{X}^{T} \boldsymbol{X} \boldsymbol{x}+\lambda \boldsymbol{x}^{T} \boldsymbol{x}=\|\boldsymbol{X} \boldsymbol{x}\|_{2}+\lambda\|\boldsymbol{x}\|_{2}>0\end{equation}
+
+So $\vec X^\T\vec X+\lambda \vec I$ with $\lambda>0$ is Positive Definite
+
+
+\subproblem 
+The problem
+\begin{equation}\operatorname{argmin}_{\boldsymbol{\theta}}\|\boldsymbol{y}-\boldsymbol{X} \boldsymbol{\theta}\|^{2}+\lambda\|\boldsymbol{\theta}\|^{2}\end{equation}
+just add a small distribance to the classical $\operatorname{argmin}_{\boldsymbol{\theta}}\|\boldsymbol{y}-\boldsymbol{X} \boldsymbol{\theta}\|^{2}=\arg \min _{\bar{\theta}^{*}}(y-X)^{T}(y-X)=E$ where $\frac{\partial E_{\bar{\theta}}}{\partial \bar{\theta}}=2 X^{T}\left(X_{\bar{\theta}}\right)$
+When Positive Definite, we have:
+$$\begin{array}{c}
+X^{T} X \bar{\theta}=X^{T} y \\
+\bar{\theta}^{*}=\left(X^{T} X\right)^{-1} X^{T} y
+\end{array}$$
+Then we add a small distribance \lambda, get:
+
+$$\boldsymbol{\theta}^{*}=\left(\boldsymbol{X}^{\top} \boldsymbol{X}+\lambda \boldsymbol{I}\right)^{-1} \boldsymbol{X}^{\top} \boldsymbol{y}$$
+
+
+
+\subproblem 
+With the Bayes' formula:
+$$P(B | A)=\frac{P(A | B) P(B)}{P(A)}$$
+$$P(\theta|y)=\frac{P(y|\theta)P(\theta)}{P(y)}$$
+Where $f_{X}\left(y_{i} ;\theta \right)$ is the same with $P(y|\theta)$ and P(y) is independent with $P(\theta)$ so we get:
+\begin{equation}\hat{\theta}_{M A P}=\arg \max _{\theta} p(\theta | y)=\arg \max _{\theta} p(\theta) p(y | \theta)\end{equation}
+Use the same formula in (4):
+\begin{equation}\frac{p(\theta | X)}{\partial \theta}=\frac{p(\theta) p(X | \theta)}{\partial \theta}=0\end{equation}
+And we have:
+$$p(\theta)=\frac{1}{\sqrt{2 \pi} \tau} e^{-\frac{\theta^{2}}{2 \tau^{2}}}\\
+p(y | \theta)=\frac{1}{\sqrt{2 \pi} \sigma} e^{-\frac{\left(y-\theta^{T} x\right)^{2}}{2 \sigma^{2}}}$$
+We can see that
+$$\theta_{\max }=\operatorname{argmax} P(\theta | y)=\operatorname{argmax}_{\theta} P(\theta) P(y | \theta)\\
+=\operatorname{argmaxlog} P(\theta) P(y | \theta)=\operatorname{argmin}_{\theta}\|y-X \theta\|^{2}+\frac{\sigma^{2}}{\tau^{2}}\|\theta\|^{2}$$
+by using(8) we can get
+$$\theta_{\max }=\left(X X^{T}+\lambda I\right)^{-1} X^{T} y$$ 
+where
+$$\lambda=\frac{\sigma^{2}}{\tau^{2}}$$
+
+\vspace{20pt}
+
+\problem{Gradient Descent}
+
+\subproblem 
+For the convx function f(x) we get: 
+$$
+\frac{f^{\prime}(x)-f^{\prime}(y)}{x-y} \geqslant 0
+$$
+With $\left|f^{\prime}(x)-f^{\prime}(y)\right| \leqslant \beta|x-y|$ 
+$$
+\frac{f^{\prime}(x)-f^{\prime}(y)}{x-y} \leqslant \beta
+$$
+Let $x=a<y,$ we have
+$$
+^{\prime}(y)-f^{\prime}(a) \leqslant \beta(y-a)
+$$
+Then
+$$
+\int_{a}^{b}\left[f^{\prime}(y)-f^{\prime}(a)\right] d y \leqslant \int_{a}^{b}[\beta(y-a)] d y
+$$
+That is
+$$
+f(b)-f(a)-f^{\prime}(a)(b-a) \leqslant \beta\left(\frac{1}{2} b^{2}-\frac{1}{2} a^{2}-a b+a^{2}\right)
+$$
+Simplifying the inequality above, we have
+$$
+f(b)-f(a) \leqslant f^{\prime}(a)(b-a)+\frac{\beta}{2}(b-a)^{2}
+$$
+\subproblem 
+From (1), let y be $x_{k+1}$ and x be $x_{k}$:
+$$
+f(x_{k+1})-f(x_{k}) \leqslant f^{\prime}(x_{k})(x_{k+1}-x_{k})+\frac{\beta}{2}(x_{k+1}-x_{k})^{2}
+$$
+Give $x_{k+1}=x_k-\eta f'(x_k)$:
+\begin{equation}f\left(x_{k+1}\right) \leqslant f\left(x_{k}\right)-\eta\left(1-\frac{\eta \beta}{2}\right)\left(f^{\prime}\left(x_{k}\right)\right)^{2}\end{equation}
+\subproblem 
+\begin{equation}\left\|x_{t+1}-x^{*}\right\|^{2}=\left\|x_{t}-\eta \nabla f\left(x_{t}\right)-x^{*}\right\|^{2}
+\\
+=\left\|x_{t}-x^{*}\right\|^{2}-2 \eta \nabla f\left(x_{t}\right)^{T}\left(x_{t}-x^{*}\right)+\eta^{2}\left\|\nabla f\left(x_{t}\right)\right\|^{2}\end{equation}
+At $x_{t}$:
+\begin{equation}f\left(x_{t}\right)-f\left(x^{*}\right) \leq \nabla f\left(x_{t}\right)^{T}\left(x_{t}-x^{*}\right)-\frac{1}{2 \beta}\left\|\nabla f\left(x_{t}\right)-\nabla f\left(x^{*}\right)\right\|^{2}\end{equation}
+define $\delta_{t}=f\left(x_{t}\right)-f\left(x^{*}\right)$:
+$\delta_{t+1} \leq \delta_{t}-\frac{1}{2 \beta}\left\|\nabla_{x_{t}} f\right\|^{2}$
+Convexity of $f$ also implies
+$$
+\begin{aligned}
+\delta_{t} & \leq\left(\nabla_{x_{t}} f\right)^{\top}\left(x_{t}-x^{*}\right) \\
+& \leq\left\|\nabla_{x_{t}} f\right\| \cdot\left\|x_{t}-x^{*}\right\| \\
+& \leq\left\|\nabla_{x_{t}} f\right\| \cdot D \\
+\frac{\delta_{t}}{D} & \leq\left\|\nabla_{x_{t}} f\right\|
+\end{aligned}
+$$
+We know D $\geq\left\|x_{1}-x^{*}\right\|$:\\
+and:\\
+$$ \delta_{t+1} \leq \delta_{t}-\frac{\delta_{t}^{2}}{2 \beta D^{2}} \rightarrow \frac{1}{2 \beta D^{2}} & \leq \frac{1}{\delta_{t+1}}-\frac{1}{\delta_{t}} 
+$$
+\\
+We may conclude that\\
+$$
+\frac{1}{\delta_{T}} \geq \frac{1}{\delta_{0}}+\frac{T}{2 \beta D^{2}} \geq \frac{T}{2 \beta D^{2}}
+$$
+from which it follows that $\delta_{T} \leq 2 \beta D^{2} / T$, hence $T=2 \beta D^{2} \varepsilon^{-1}$ iterations suffice to ensure that $\delta_{T} \leq \varepsilon$
+as claimed.
+So the original formula has been proved.
+\subproblem 
+Let
+$$f(y)-f(x)=f(y)-f(z)+f(z)-f(x)$$
+With convex:
+$$f(z)-f(x) \geqslant f^{\prime}(x)(z-x)
+\\
+=f^{\prime}(x)(z-y)+f^{\prime}(x)(y-x)$$
+And:
+$$f(y)-f(z) \geqslant f^{\prime}(y)(y-z)-\frac{\beta}{2}(y-z)^{2}$$
+And:
+$$y-z=\frac{1}{\beta}\left(f^{\prime}(y)-f^{\prime}(x)\right)$$
+So we have:
+$$f(y)-f(x) \geqslant f^{\prime}(x)(y-x)+\frac{1}{\beta}\left[f^{\prime}(y)-f^{\prime}(x)\right]^{2}-\frac{\beta}{2} \times \frac{1}{\beta}\left[f^{\prime}(y)-f^{\prime}(x)\right]^{2}
+\\
+=f^{\prime}(x)(y-x)+\frac{1}{2 \beta}\left[f^{\prime}(y)-f^{\prime}(x)\right]^{2}$$
+\vspace{20pt}
+
+\problem{Kernel functions}
+
+\subproblem 
+For every z:
+$$\begin{aligned}
+z^{T} K z &=\sum_{i=1}^{m} \sum_{j=1}^{m} z_{i} K_{i j} z_{j} \\
+&=\sum_{i=1}^{m} \sum_{j=1}^{m} z_{i} f \left (x^{(i)}\right)^{T} f\left(x^{(j)}\right) z_{j} \\
+&=\left(\sum_{i=1}^{m} z_{i} f\left(x^{(i)}\right)\right)^{T}\left(\sum_{j=1}^{m} z_{j} f\left(x^{(j)}\right)\right) \\
+&=\left(\sum_{i=1}^{m} z_{i} f\left(x^{(i)}\right)\right)^{2} \\
+& \geqslant 0
+\end{aligned}$$
+So K is PSD.
+\subproblem 
+We will start by showing that "if matrices $A$ and $B$ are $P S D$, then $C_{i j}=A_{i j} \times B_{i j}$ is $\mathrm{PSD}$"\\
+Suppose we have PSD matrix $Q$, then we can prove $Q^{\frac{1}{2}}^$ is PSD matrix(where cov() return  co-variance matrix):
+$$\left.\operatorname{cov}\left(Q^{\frac{1}{2}} \mathbf{x}\right)=Q^{\frac{1}{2}} \operatorname{cov}(\mathbf{x})\right) Q^{\frac{1}{2}}=Q^{\frac{1}{2}} \mathbf{I} Q^{\frac{1}{2}}=Q$$
+We also know that any covariance matrix is PSD. So given
+A and B PSD, we know that they are covariance matrices.\\
+We want to show that C is also a covariance matrix and
+therefore PSD.\\
+Let $u=\left(u_{1}, \ldots, u_{n}\right)^{T} \sim N\left(0_{p}, A\right)$ and
+$v=\left(v_{1}, \ldots, v_{n}\right)^{T} \sim N\left(0_{p}, B\right)$ where $0+p$ is a p-dimensional vector of zeros Define the vector $w=\left(u_{1} v_{1}, \ldots, u_{n} v_{n}\right)^{T}$
+$$
+\operatorname{cov}(w)=E\left[\left(w-\mu^{w}\right)\left(w-\mu^{w}\right)^{T}\right]=E\left[w w^{T}\right]
+$$
+This is because $\mu_{i}^{w}=0$ for all $i .$ This is because $u$ and $v$ are independent so $\mu^{w}=\mu^{u} \times \mu^{v}=0_{p}$
+$$
+\begin{aligned}
+\operatorname{cov}(w)_{i, j} &=E\left[w_{i} w_{j}^{T}\right]=E\left[\left(u_{i} v_{i}\right)\left(u_{j} v_{j}\right)\right]=E\left[\left(u_{i} u_{j}\right)\left(v_{i} v_{j}\right)\right] \\
+&=E\left[u_{i} u_{j}\right] E\left[v_{i} v_{j}\right]
+\end{aligned}
+$$
+This is again because $u$ and $v$ are independent.
+$$
+\operatorname{cov}(w)_{i, j}=E\left[u_{i} u_{j}\right] E\left[v_{i} v_{j}\right]=A_{i, j} \times B_{i, j}=C_{i, j}
+$$
+Therefore C is a covariance matrix and therefore PSD.\\
+Therefore any kernel matrix created from
+$k=k_{1}k_{2}$ is PSD.
+\subproblem 
+First, we will show that $c_{1} * k_{1}\left(x, x^{\prime}\right)+c_{2} * k_{2}\left(x, x^{\prime}\right),$ where $c_{1}, c_{2} \geq 0$ is a valid Kernel.
+\\
+$\mathrm{K}$ is $\mathrm{PSD}$ because any $v \in \mathbb{R}^{n}$
+$v^{T}\left(c_{1} K_{1}+c_{2} K_{2}\right) v=c_{1}\left(v^{T} K_{1} v\right)+c_{2}\left(v^{T} K_{2} v\right) \geq 0$ as
+$v^{T} K_{1} v \geq 0$ and $v^{T} K_{2} v \geq 0$ follows from $K_{1}$ and $K_{2}$ being positive semi definite. \\
+So $\mathrm{k}$ is a valid kernel.
+\\
+So any Non-negative weighted sum of k will be PSD.
+\subproblem 
+We have:
+$$\exp (x)=\lim _{i \rightarrow \infty}\left(1+x+\cdots+\frac{x^{i}}{i !}\right)$$
+with (4) we know any Non-negative weighted sum of k is PSD, so $k(\vec u,\vec v)=\exp(k_1(\vec u,\vec v))$ is PSD.
+\end{solution}
+
+\end{document} 
